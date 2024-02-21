@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-cn" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>Login - DNSmasqWeb - Desgin By Xiaok</title>
+		<link href="{{ static_url('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ static_url('css/xk_login.css') }}" rel="stylesheet">
+	</head>
+	<body>
+		<div id="login-page" class="container">
+        <form method="post">
+        <section class="loginBox span7">
+            <h2>DnsMasq Web</h2>
+            <p><span>用户名</span><input type="text" name="username" placeholder="Username"/></p>
+            <p><span>密　码</span><input type="password" name="password" placeholder="Password"/></p>
+            <section class="row-fluid">
+                <section class="span8"><label><input type="checkbox" name="remember" value="yes"/> 记住登录</label></section>
+                <section class="span1"><input type="submit" value="登　录" class="btn btn-primary"></section>
+            </section>
+        </section>
+        </form>
+        </div>
+        <div class="LoginFooter">
+            <a href="http://github.luxiaok.com/DNSmasqWeb" target="_blank">DnsMasqWeb Project</a> - Desgin By
+            <a href="http://github.luxiaok.com" target="_blank">Xiaok</a>
+        </div>
+	</body>
+</html>

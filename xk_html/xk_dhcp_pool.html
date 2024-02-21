@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-cn" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="description" content="DnsMasqWeb - Desgin By Xiaok">
+		<meta name="author" content="Xiaok">
+		<title>DHCP管理 - DnsMasqWeb - Desgin By Xiaok</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/xk_static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/xk_static/css/bootstrap-switch.css" rel="stylesheet">
+        <link href="/xk_static/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="/xk_static/css/xk_dnsmasqweb.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			{% include "xk_top_nav.html" %}
+			<div class="row">
+				{% include "xk_nav.html" %}
+				<div class="span10">
+					<h4>DHCP地址池管理 | <a href="/dhcp/host">绑定规则</a></h4>
+                    <div class="pull-right">
+                        <input type="button" class="btn btn-primary" value="保 存" onclick="save_dhcp_config();">
+                        <input type="button" class="btn btn-warning" value="刷新服务" onclick="reload_dhcp('normal')">
+                    </div><br />
+
+                    <form class="form-horizontal" id="add_line" method="post">
+						<fieldset>
+							<div class="control-group">
+								<label class="control-label" for="status">DHCP开关</label>
+								<div class="controls">
+                                    {% if dhcp['xk_dhcp_status'] == 'yes' %}
+                                    {% set status = 'checked' %}
+                                    {% else %}
+                                    {% set status = '' %}
+                                    {% endif %}
+									<div class="switch switch-small"><input id="status" name="status" type="checkbox" {{status}}/></div>
+								</div>
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="range_start">地址池</label>
+								<div class="controls">
+									<input type="text" class="input-medium" id="range_start" name="range_start" value="{{dhcp['xk_dhcp_pool_start']}}" /> -
+                                    <input type="text" class="input-medium" id="range_end" name="range_end" value="{{dhcp['xk_dhcp_pool_stop']}}" />
+								</div>
+							</div>
+                            <div class="control-group">
+								<label class="control-label" for="netmask">子网掩码</label>
+								<div class="controls">
+									<select name="netmask" id="netmask">
+                                        <option value="255.0.0.0">255.0.0.0/8</option>
+                                        <option value="255.255.0.0">255.255.0.0/16</option>
+                                        <option value="255.255.192.0">255.255.192.0/18</option>
+                                        <option value="255.255.224.0">255.255.224.0/19</option>
+                                        <option value="255.255.240.0">255.255.240.0/20</option>
+                                        <option value="255.255.248.0">255.255.248.0/21</option>
+                                        <option value="255.255.252.0">255.255.252.0/22</option>
+                                        <option value="255.255.254.0">255.255.254.0/23</option>
+                                        <option value="255.255.255.0">255.255.255.0/24</option>
+                                        <option value="255.255.255.128">255.255.255.128/25</option>
+                                        <option value="255.255.255.192">255.255.255.192/26</option>
+                                        <option value="255.255.255.224">255.255.255.224/27</option>
+                                        <option value="255.255.255.240">255.255.255.240/28</option>
+                                        <option value="255.255.255.248">255.255.255.248/29</option>
+                                        <option value="255.255.255.252">255.255.255.252/30</option>
+                                        <option value="255.255.255.254">255.255.255.254/31</option>
+                                        <option value="255.255.255.255">255.255.255.255/32</option>
+									</select>
+								</div>
+							</div>
+                            <div class="control-group">
+								<label class="control-label" for="router">网关地址</label>
+								<div class="controls">
+									<input type="text" class="input-xlarge" id="router" name="router" value="{{dhcp['xk_dhcp_pool_gw']}}" />
+								</div>
+							</div>
+                            <div class="control-group">
+								<label class="control-label" for="domain">域名</label>
+								<div class="controls">
+									<input type="text" class="input-xlarge" id="domain" name="domain" value="{{dhcp['xk_dhcp_pool_domain']}}" />
+								</div>
+							</div>
+                            <div class="control-group">
+								<label class="control-label" for="lease">租约</label>
+								<div class="controls">
+									<select name="lease" id="lease">
+                                        <option value="1h">1小时</option>
+                                        <option value="2h" selected>2小时</option>
+                                        <option value="6h">6小时</option>
+                                        <option value="10h">10小时</option>
+                                        <option value="12h">12小时</option>
+                                        <option value="1d">1天</option>
+                                        <option value="2d">2天</option>
+                                        <option value="3d">3天</option>
+                                        <option value="7d">7天</option>
+                                        <option value="10d">10天</option>
+                                        <option value="15d">15天</option>
+									</select>
+								</div>
+							</div>
+                            <div class="control-group">
+								<label class="control-label" for="dns1">主域名服务器</label>
+								<div class="controls">
+									<input type="text" class="input-xlarge" id="dns1" name="dns1" value="{{dhcp['xk_dhcp_pool_dns1']}}" />
+								</div>
+							</div>
+                            <div class="control-group">
+								<label class="control-label" for="dns2">辅助域名服务器</label>
+                                <div class="controls">
+									<input type="text" class="input-xlarge" id="dns2" name="dns2" value="{{dhcp['xk_dhcp_pool_dns2']}}" />
+								</div>
+							</div>
+                            <div class="control-group">
+								<label class="control-label" for="comment">备注信息</label>
+								<div class="controls">
+									<input type="text" class="input-xlarge" id="comment" name="comment" value="{{dhcp['xk_dhcp_pool_comment']}}" />
+								</div>
+							</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="/xk_static/js/jquery-1.8.3.min.js"></script>
+		<script src="/xk_static/bootstrap/js/bootstrap.min.js"></script>
+		<script src="/xk_static/js/bootstrap-switch.js"></script>
+        <script src="/xk_static/js/xk_dhcp.js"></script>
+        <script src="/xk_static/js/xk_dnsmasqweb.js"></script>
+        <script type="text/javascript">
+            $("#status").bootstrapSwitch();
+            $("#netmask").val("{{dhcp['xk_dhcp_pool_netmask']}}");
+            $("#lease").val("{{dhcp['xk_dhcp_pool_lease']}}");
+            function save_dhcp_config() {
+                status = "no";
+                if($('#status').is(':checked')) {
+                    status = "yes";
+                };
+                range_start = $("#range_start").val();
+                range_end = $("#range_end").val();
+                netmask = $("#netmask").val();
+                dns1 = $("#dns1").val();
+                dns2 = $("#dns2").val();
+                lease = $("#lease").val();
+                domain = $("#domain").val();
+                comment = $("#comment").val();
+                router = $("#router").val();
+                if ( range_start == '') {
+                    alert("请输入起始地址！");
+                    $("#range_start").focus();
+                    return false;
+                };
+                if ( range_end == '') {
+                    alert("请输入结束地址！");
+                    $("#ragne_end").focus();
+                    return false;
+                };
+                if ( router == '') {
+                    alert("请输入网关地址！");
+                    $("#router").focus();
+                    return false;
+                };
+                if ( dns1 == '') {
+                    alert("请输入DNS地址！");
+                    $("#dns1").focus();
+                    return false;
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/dhcp/pool",
+                    data: {'status':status, 'range_start':range_start, 'range_end':range_end, 'netmask':netmask, 'dns1':dns1, 'dns2':dns2, 'lease':lease, 'domain':domain,'router':router, 'comment':comment },
+                    dataType: "text",
+                    success: function(msg){
+                        if (msg == "1") {
+                            alert("保存成功！");
+                            //window.location.href="/dhcp/pool";
+                            if ( confirm("是否刷新DHCP配置？") ) {
+                                reload_dhcp("normal");
+                                return true;
+                            };
+                            return false;
+                        } else {
+                            alert("提示：保存失败！");
+                            return false;
+                        }
+                        },
+                    error:function(){
+                        alert("提示：服务器内部错误！");
+                        return false;
+                        },
+                    });
+            };
+        </script>
+        {% include "xk_footer.html" %}
+	</body>
+</html>
